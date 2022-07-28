@@ -1,5 +1,5 @@
 const express = require("express");
-const {sequelize, product,category} = require("./models");
+const {sequelize, product,category,cart,history} = require("./models");
 
 const app = express();
 app.use(express.json());
@@ -74,7 +74,7 @@ app.get("/categories", async(req,res) => {
 });*/
 
 //get all products with a specific category_id
-app.get("/products/:category_id", async(req,res) => {
+app.get("/products/category/:category_id", async(req,res) => {
     const category_id = req.params.category_id;
     try{
         const charactero = await product.findAll({
@@ -87,6 +87,50 @@ app.get("/products/:category_id", async(req,res) => {
         return res.status(500).json(err);
     }
 });
+
+//get product with name
+app.get("/products/:name", async(req,res) => {
+    const name = req.params.name;
+    try{
+        const namee = await product.findAll({
+            where : {name : name}
+        });
+
+        return res.json(namee);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+app.get("/products/:name", async(req,res) => {
+    const name = req.params.name;
+    try{
+        const namee = await product.findAll({
+            where : {name : name}
+        });
+
+        return res.json(namee);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+/*app.get("/products/priceFilter/:leastPrice", async(req,res) => {
+    const leastPrice = req.params.leastPrice;
+    const { Op } = require("sequelize");
+    
+    try{
+        const something = await product.findAll({
+            where:{price: {
+                [Op.gte]: leastPrice
+            }}
+        })
+
+    }
+
+});*/
 
 app.listen({port : 5000 }, async() => {
     console.log("server up on port 5000");
