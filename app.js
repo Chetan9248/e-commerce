@@ -4,6 +4,7 @@ const {sequelize, product,category,cart,history} = require("./models");
 const app = express();
 app.use(express.json());
 
+
 //add category
 app.post("/categories", async(req,res) => {
     const {category_name} = req.body;
@@ -18,6 +19,7 @@ app.post("/categories", async(req,res) => {
     }
 
 });
+
 
 //add product
 app.post("/products", async(req,res) => {
@@ -34,6 +36,68 @@ app.post("/products", async(req,res) => {
 
 });
 
+
+//add product in history
+app.post("/history", async(req,res) => {
+    const {product_name,product_id,quantntity,price,total} = req.body;
+
+    try {
+        const producto = await history.create({product_name,product_id,quantntity,price,total});
+
+        return res.json(producto);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+
+});
+
+
+//add product to cart
+app.post("/cart", async(req,res) => {
+    const {product_id,product_name,price,quantntity,total,active} = req.body;
+
+    try {
+        const producto = await cart.create({product_id,product_name,price,quantntity,total,active});
+
+        return res.json(producto);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+
+});
+
+
+//get all products in cart
+app.get("/cart", async(req,res) => {
+    const active = req.params.active;
+    try{
+        const activee = await cart.findAll({
+            where : {active : true}
+        });
+
+        return res.json(activee);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+
+//get all products from history
+app.get("/history", async(req,res) => {
+    try{
+        const producte = await history.findAll();
+
+        return res.json(producte);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+
 //get all products
 app.get("/products", async(req,res) => {
     try{
@@ -46,6 +110,7 @@ app.get("/products", async(req,res) => {
     }
 });
 
+
 //get all categories
 app.get("/categories", async(req,res) => {
     try{
@@ -57,6 +122,7 @@ app.get("/categories", async(req,res) => {
         return res.status(500).json(err);
     }
 });
+
 
 //get one product with a specific category_id
 /*app.get("/products/:category_id", async(req,res) => {
@@ -73,6 +139,7 @@ app.get("/categories", async(req,res) => {
     }
 });*/
 
+
 //get all products with a specific category_id
 app.get("/products/category/:category_id", async(req,res) => {
     const category_id = req.params.category_id;
@@ -87,6 +154,7 @@ app.get("/products/category/:category_id", async(req,res) => {
         return res.status(500).json(err);
     }
 });
+
 
 //get product with name
 app.get("/products/:name", async(req,res) => {
@@ -103,6 +171,8 @@ app.get("/products/:name", async(req,res) => {
     }
 });
 
+
+//get product with exact name
 app.get("/products/:name", async(req,res) => {
     const name = req.params.name;
     try{
@@ -117,20 +187,47 @@ app.get("/products/:name", async(req,res) => {
     }
 });
 
-/*app.get("/products/priceFilter/:leastPrice", async(req,res) => {
+
+//get products >= a price
+app.get("/products/higherCap/:leastPrice", async(req,res) => {
     const leastPrice = req.params.leastPrice;
     const { Op } = require("sequelize");
     
     try{
-        const something = await product.findAll({
+        const namee = await product.findAll({
             where:{price: {
                 [Op.gte]: leastPrice
             }}
         })
 
+        return res.json(namee);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
     }
+});
 
-});*/
+
+//get products <= a price
+app.get("/products/lowerCap/:leastPrice", async(req,res) => {
+    const leastPrice = req.params.leastPrice;
+    const { Op } = require("sequelize");
+    
+    try{
+        const namee = await product.findAll({
+            where:{price: {
+                [Op.lte]: leastPrice
+            }}
+        })
+
+        return res.json(namee);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+
 
 app.listen({port : 5000 }, async() => {
     console.log("server up on port 5000");
