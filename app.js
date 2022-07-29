@@ -71,7 +71,6 @@ app.post("/cart", async(req,res) => {
 
 //get all products in cart
 app.get("/cart", async(req,res) => {
-    const active = req.params.active;
     try{
         const activee = await cart.findAll({
             where : {active : true}
@@ -83,6 +82,22 @@ app.get("/cart", async(req,res) => {
         return res.status(500).json(err);
     }
 });
+
+//remove a product from cart
+app.put("/remove_cart/:id", async(req,res) => {
+    const id = req.params.id;
+    try{
+        const nom = await cart.update(
+            {active : true},
+            {where : {id : id}
+        });
+
+        return res.json("removed item no: " + id);
+    }catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+})
 
 
 //get all products from history
@@ -124,9 +139,8 @@ app.get("/categories", async(req,res) => {
 });
 
 
-//get one product with a specific category_id
-/*app.get("/products/:category_id", async(req,res) => {
-    const category_id = req.params.category_id;
+//get one product each from all the categories
+/*app.get("/one_product_each", async(req,res) => {
     try{
         const charactero = await product.findOne({
             where : {category_id : category_id}
