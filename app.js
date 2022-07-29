@@ -92,7 +92,7 @@ app.put("/remove_cart/:id", async(req,res) => {
             {where : {id : id}
         });
 
-        return res.json("removed item no: " + id);
+        return res.json(nom);
     }catch(err){
         console.log(err);
         return res.status(500).json(err);
@@ -186,15 +186,15 @@ app.get("/products/:name", async(req,res) => {
 });
 
 
-//get product with exact name
-app.get("/products/:name", async(req,res) => {
-    const name = req.params.name;
+//get product with description
+app.get("/Clothing/:description", async(req,res) => {
+    const description = req.params.description;
     try{
-        const namee = await product.findAll({
-            where : {name : name}
+        const des = await product.findAll({
+            where : {description : description}
         });
 
-        return res.json(namee);
+        return res.json(des);
     } catch(err){
         console.log(err);
         return res.status(500).json(err);
