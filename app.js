@@ -1,9 +1,12 @@
 const express = require("express");
+const { Op, col } = require("sequelize");
 const {sequelize, product,category,cart,history} = require("./models");
 
 const app = express();
 app.use(express.json());
 
+
+/*
 
 //add category
 app.post("/categories", async(req,res) => {
@@ -88,7 +91,7 @@ app.put("/remove_cart/:id", async(req,res) => {
     const id = req.params.id;
     try{
         const nom = await cart.update(
-            {active : true},
+            {active : false },
             {where : {id : id}
         });
 
@@ -138,6 +141,7 @@ app.get("/categories", async(req,res) => {
     }
 });
 
+*/
 
 //get one product each from all the categories
 /*app.get("/one_product_each", async(req,res) => {
@@ -153,6 +157,7 @@ app.get("/categories", async(req,res) => {
     }
 });*/
 
+/*
 
 //get all products with a specific category_id
 app.get("/products/category/:category_id", async(req,res) => {
@@ -240,6 +245,106 @@ app.get("/products/lowerCap/:leastPrice", async(req,res) => {
         return res.status(500).json(err);
     }
 });
+
+*/
+/*
+
+//trying filters
+app.get("/search", async(req,res) => {
+    const options = req.query;
+    try{
+        const filter = await product.findAll({
+            where : {
+                name : {
+                    [Op.iLike]: `%${options.name}%`
+                },
+                description : {
+                    [Op.iLike]: `%${options.description}%`
+                }
+                //category_id : {
+                //    [Op.iLike]: `%${options.category_id}%`
+                //}
+            }
+        });
+
+        return res.json(filter);
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+
+
+app.get("/products", async(res,req)=>{
+    const {Op}= require("sequelize");
+    const {name,category_id,description,price} = req.query;
+    try{
+        let options = {where: {} };
+        if(name){
+            options.where.name={
+                [Op.substring]:name
+            }
+        }
+        if(category_id){
+            options.where.category_id=category_id;
+        }
+        if(description) {
+            options.where.description={
+                [Op.substring]:description
+            }
+        }
+        if(price){
+            options.where.price=price
+        }
+
+        const filter = await product.findAll(options)
+        return res.json(filter)
+    }catch(err){
+        console.log(err)
+        return res.statusCode(500).json(err);
+    }
+});
+
+*/
+
+
+app.get('/products',async(req,res)=>{
+    const { Op } = require("sequelize");
+    const {id,name,category_id,priceUpper,priceLower,description}= req.query
+    try{
+        let options = { where: {} };
+        if(id){
+            options.where.id=id
+        }
+        if(category_id){
+            options.where.category_id=category_id
+        }
+        if(priceUpper && priceLower){
+            options.where.price={
+                [Op.and]: {
+                   [Op.lte]: priceUpper,
+                   [Op.gte]: priceLower
+                }
+            }
+        }
+        if(name){
+            options.where.name={
+                [Op.substring]:name
+            }
+        }
+        if(description){
+            options.where.description={
+                [Op.substring]:description
+            }
+        }
+        const producta=await product.findAll(options)
+        return res.json(producta)
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({err})
+    }
+})
 
 
 
