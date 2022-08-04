@@ -247,10 +247,10 @@ app.get("/products/lowerCap/:leastPrice", async(req,res) => {
 });
 
 */
-/*
+
 
 //trying filters
-app.get("/search", async(req,res) => {
+app.get("/searchname", async(req,res) => {
     const options = req.query;
     try{
         const filter = await product.findAll({
@@ -258,9 +258,9 @@ app.get("/search", async(req,res) => {
                 name : {
                     [Op.iLike]: `%${options.name}%`
                 },
-                description : {
-                    [Op.iLike]: `%${options.description}%`
-                }
+                // description : {
+                //     [Op.iLike]: `%${options.description}%`
+                // }
                 //category_id : {
                 //    [Op.iLike]: `%${options.category_id}%`
                 //}
@@ -274,7 +274,7 @@ app.get("/search", async(req,res) => {
     }
 });
 
-
+/*
 
 app.get("/products", async(res,req)=>{
     const {Op}= require("sequelize");
