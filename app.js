@@ -309,7 +309,7 @@ app.get("/products", async(res,req)=>{
 */
 
 
-app.get('/products',async(req,res)=>{
+app.get('/filter',async(req,res)=>{
     const { Op } = require("sequelize");
     const {id,name,category_id,priceUpper,priceLower,description}= req.query
     try{
@@ -330,12 +330,12 @@ app.get('/products',async(req,res)=>{
         }
         if(name){
             options.where.name={
-                [Op.substring]:name
+                [Op.iLike]: `%${name}%`
             }
         }
         if(description){
             options.where.description={
-                [Op.substring]:description
+                [Op.iLike]: `%${description}%`
             }
         }
         const producta=await product.findAll(options)
